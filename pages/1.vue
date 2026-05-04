@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="min-h-screen bg-gradient-to-b from-amber-50 via-rose-50 to-fuchsia-100">
     <templates-simple v-if="decodedData" :acc="decodedData" />
     <div
       v-else
