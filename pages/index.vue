@@ -27,7 +27,18 @@
       </button>
 
       <!-- User menu -->
-      <div class="ml-auto h-full flex items-center border-l relative" ref="menuRef">
+      <!-- Mis perfiles button (outside menu) -->
+      <button
+        @click="profilesOpen = true"
+        class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
+      >
+        <icon name="ph:list-duotone" class="h-4 w-4" />
+        <span class="hidden sm:inline">Mis perfiles</span>
+        <span v-if="profiles?.length" class="bg-slate-100 rounded-full px-1.5 py-0.5 leading-none">{{ profiles.length }}</span>
+      </button>
+
+      <!-- User menu -->
+      <div class="h-full flex items-center border-l relative" ref="menuRef">
         <button
           @click="menuOpen = !menuOpen"
           class="h-full flex items-center gap-2 px-3 hover:bg-slate-50"
@@ -55,15 +66,11 @@
               <p class="text-sm font-medium text-slate-700 truncate">{{ session?.user?.name }}</p>
               <p class="text-xs text-slate-400 truncate">{{ session?.user?.email }}</p>
             </div>
-            <button
-              @click="profilesOpen = true; menuOpen = false"
-              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
-            >
-              <icon name="ph:list-duotone" class="h-4 w-4 text-slate-400" />
-              Mis perfiles
-              <span v-if="profiles?.length" class="ml-auto bg-slate-100 rounded-full px-1.5 py-0.5 text-xs">{{ profiles.length }}</span>
-            </button>
-            <a
+            <div v-if="currentProfileTitle" class="px-4 py-2 border-b flex items-center gap-2 text-xs text-slate-500 bg-slate-50">
+              <icon name="ph:pencil-simple-duotone" class="h-3.5 w-3.5 shrink-0" />
+              <span class="truncate">{{ currentProfileTitle }}</span>
+            </div>
+            <
               href="https://github.com/Matute289/onelink_claude"
               target="_blank"
               @click="menuOpen = false"
@@ -186,6 +193,9 @@
 
 <script setup>
 import { onClickOutside } from '@vueuse/core'
+import { createAuthClient } from 'better-auth/client'
+
+const authClient = createAuthClient()
 
 const EMPTY_DATA = () => ({
   n: '', d: '', i: '',
@@ -206,6 +216,10 @@ const [{ data: profiles, refresh: refreshProfiles }, { data: session }] = await 
   useFetch('/api/profiles'),
   useFetch('/api/auth/get-session'),
 ])
+
+const currentProfileTitle = computed(() =>
+  editingId.value ? profiles.value?.find(p => p.id === editingId.value)?.title : null
+)
 
 async function saveProfile() {
   if (!data.value.n && !data.value.d) {
@@ -286,7 +300,7 @@ function prefillDemoData() {
 }
 
 async function signOut() {
-  await $fetch('/api/auth/sign-out', { method: 'POST' })
+  await authClient.signOut()
   navigateTo('/login')
 }
 </script>

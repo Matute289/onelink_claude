@@ -4,7 +4,7 @@
     description="Add some social media links"
   >
     <div class="shadow sm:overflow-hidden sm:rounded-md">
-      <div class="grid grid-cols-2 gap-8 bg-white px-4 py-5 sm:p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white px-4 py-5 sm:p-6">
         <div>
           <label for="facebook" class="block text-sm font-medium text-gray-700"
             >Facebook</label
