@@ -83,13 +83,13 @@
       </div>
 
       <div class="flex-1 overflow-y-auto">
-        <div v-if="profiles.length === 0" class="flex items-center justify-center h-full text-sm text-slate-400">
+        <div v-if="!profiles?.length" class="flex items-center justify-center h-full text-sm text-slate-400">
           No tenés perfiles todavía. Completá el formulario y guardá.
         </div>
         <table v-else class="w-full text-sm">
           <tbody>
             <tr
-              v-for="profile in profiles"
+              v-for="profile in (profiles ?? [])"
               :key="profile.id"
               class="border-b last:border-0 hover:bg-slate-50"
             >
@@ -130,10 +130,7 @@ const data = ref(EMPTY_DATA())
 const editingId = ref(null)
 const saving = ref(false)
 
-const { data: profiles, refresh: refreshProfiles } = await useAsyncData(
-  'profiles',
-  () => $fetch('/api/profiles')
-)
+const { data: profiles, refresh: refreshProfiles } = await useFetch('/api/profiles')
 
 async function saveProfile() {
   if (!data.value.n && !data.value.d) {
