@@ -44,5 +44,5 @@ jobs:
             docker load < /tmp/onelink-web.tar.gz
             rm /tmp/onelink-web.tar.gz
             cd /opt/onelink
-            docker compose -f docker-compose.vps.yml up -d --force-recreate onelink-web
+            docker compose -f docker-compose.vps.yml up -d --force-recreate onelink-app
             docker compose -f docker-compose.vps.yml ps
