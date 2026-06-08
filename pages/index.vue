@@ -15,7 +15,7 @@
         class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
       >
         <icon name="ph:floppy-disk-duotone" class="h-4 w-4" />
-        <span>{{ saving ? 'Guardando...' : (editingId ? 'Guardar' : 'Guardar nuevo') }}</span>
+        <span>{{ saving ? 'Guardando...' : 'Guardar Onelink' }}</span>
       </button>
       <button
         v-if="editingId"
@@ -26,50 +26,68 @@
         <span class="hidden sm:inline">Copiar URL</span>
       </button>
 
-      <div class="ml-auto flex items-center h-full">
+      <!-- User menu -->
+      <div class="ml-auto h-full flex items-center border-l relative" ref="menuRef">
         <button
-          @click="profilesOpen = true"
-          class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
+          @click="menuOpen = !menuOpen"
+          class="h-full flex items-center gap-2 px-3 hover:bg-slate-50"
         >
-          <icon name="ph:list-duotone" class="h-4 w-4" />
-          <span class="hidden sm:inline">Mis perfiles</span>
-          <span v-if="profiles?.length" class="bg-slate-100 rounded-full px-1.5 py-0.5 leading-none">{{ profiles.length }}</span>
-        </button>
-
-        <div class="h-full flex items-center gap-2 px-3 border-l">
           <img
             v-if="session?.user?.image"
             :src="session.user.image"
             class="h-6 w-6 rounded-full object-cover"
-            :alt="session.user.name"
+            :alt="session?.user?.name"
           />
           <icon v-else name="ph:user-circle-duotone" class="h-5 w-5 text-slate-400" />
-          <span class="hidden md:inline text-xs text-slate-500 max-w-24 truncate">{{ session?.user?.name }}</span>
-        </div>
-
-        <button
-          @click="signOut"
-          class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-500 hover:bg-slate-50"
-          title="Cerrar sesión"
-        >
-          <icon name="ph:sign-out-duotone" class="h-4 w-4" />
-          <span class="hidden sm:inline">Salir</span>
+          <icon name="ph:caret-down-bold" class="h-3 w-3 text-slate-400" />
         </button>
 
-        <a
-          href="https://github.com/Matute289/onelink_claude"
-          target="_blank"
-          class="h-full flex items-center px-3 border-l text-slate-700 hover:bg-slate-50"
-          title="Ver en GitHub"
+        <Transition
+          enter-active-class="transition-all duration-150"
+          enter-from-class="opacity-0 -translate-y-1"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-100"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-1"
         >
-          <icon name="mdi:github" class="h-4 w-4" />
-        </a>
+          <div v-if="menuOpen" class="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border z-50 py-1">
+            <div class="px-4 py-2.5 border-b">
+              <p class="text-sm font-medium text-slate-700 truncate">{{ session?.user?.name }}</p>
+              <p class="text-xs text-slate-400 truncate">{{ session?.user?.email }}</p>
+            </div>
+            <button
+              @click="profilesOpen = true; menuOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
+            >
+              <icon name="ph:list-duotone" class="h-4 w-4 text-slate-400" />
+              Mis perfiles
+              <span v-if="profiles?.length" class="ml-auto bg-slate-100 rounded-full px-1.5 py-0.5 text-xs">{{ profiles.length }}</span>
+            </button>
+            <a
+              href="https://github.com/Matute289/onelink_claude"
+              target="_blank"
+              @click="menuOpen = false"
+              class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
+            >
+              <icon name="mdi:github" class="h-4 w-4 text-slate-400" />
+              Ver en GitHub
+            </a>
+            <div class="border-t my-1" />
+            <button
+              @click="signOut"
+              class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2.5"
+            >
+              <icon name="ph:sign-out-duotone" class="h-4 w-4" />
+              Cerrar sesión
+            </button>
+          </div>
+        </Transition>
       </div>
     </div>
 
     <!-- Content: form + preview -->
-    <div class="flex-1 flex overflow-hidden">
-      <div class="flex-1 overflow-y-auto bg-slate-100 p-6 md:p-8">
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+      <div class="lg:col-span-2 overflow-y-auto bg-slate-100 p-6 md:p-8">
         <app-form-profile
           v-model:name="data.n"
           v-model:desc="data.d"
@@ -91,8 +109,7 @@
         <app-form-links v-model="data.ls" />
       </div>
 
-      <!-- Preview (hidden on mobile/tablet) -->
-      <div class="hidden lg:flex w-80 xl:w-96 shrink-0 border-l overflow-hidden">
+      <div class="hidden lg:flex border-l overflow-hidden">
         <app-form-preview :data="data" />
       </div>
     </div>
@@ -128,10 +145,7 @@
                     <icon name="ph:plus-bold" class="h-3 w-3" />
                     Nuevo
                   </button>
-                  <button
-                    @click="profilesOpen = false"
-                    class="p-1 rounded hover:bg-slate-100 text-slate-500"
-                  >
+                  <button @click="profilesOpen = false" class="p-1 rounded hover:bg-slate-100 text-slate-500">
                     <icon name="ph:x-bold" class="h-4 w-4" />
                   </button>
                 </div>
@@ -154,18 +168,9 @@
                         <p class="text-xs text-slate-400">{{ new Date(profile.created_at).toLocaleDateString('es-AR') }}</p>
                       </div>
                       <div class="flex items-center gap-1 shrink-0">
-                        <button
-                          @click="loadProfile(profile); profilesOpen = false"
-                          class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
-                        >Editar</button>
-                        <button
-                          @click="copyProfileUrl(profile.id)"
-                          class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
-                        >URL</button>
-                        <button
-                          @click="deleteProfile(profile.id)"
-                          class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
-                        >Borrar</button>
+                        <button @click="loadProfile(profile); profilesOpen = false" class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100">Editar</button>
+                        <button @click="copyProfileUrl(profile.id)" class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100">URL</button>
+                        <button @click="deleteProfile(profile.id)" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50">Borrar</button>
                       </div>
                     </div>
                   </div>
@@ -180,6 +185,8 @@
 </template>
 
 <script setup>
+import { onClickOutside } from '@vueuse/core'
+
 const EMPTY_DATA = () => ({
   n: '', d: '', i: '',
   f: '', t: '', ig: '', gh: '', tg: '', l: '', e: '', w: '', y: '',
@@ -190,6 +197,10 @@ const data = ref(EMPTY_DATA())
 const editingId = ref(null)
 const saving = ref(false)
 const profilesOpen = ref(false)
+const menuOpen = ref(false)
+const menuRef = ref(null)
+
+onClickOutside(menuRef, () => { menuOpen.value = false })
 
 const [{ data: profiles, refresh: refreshProfiles }, { data: session }] = await Promise.all([
   useFetch('/api/profiles'),
