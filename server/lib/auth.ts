@@ -22,10 +22,6 @@ export const auth = betterAuth({
       clientId: process.env.NUXT_TWITTER_CLIENT_ID!,
       clientSecret: process.env.NUXT_TWITTER_CLIENT_SECRET!,
     },
-    facebook: {
-      clientId: process.env.NUXT_FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.NUXT_FACEBOOK_CLIENT_SECRET!,
-    },
   },
   trustedOrigins: [process.env.NUXT_BETTER_AUTH_URL!],
 })

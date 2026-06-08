@@ -35,7 +35,6 @@ const providers = [
   { id: 'github',   label: 'GitHub',  icon: 'mdi:github' },
   { id: 'discord',  label: 'Discord', icon: 'ic:baseline-discord' },
   { id: 'twitter',  label: 'X',       icon: 'mdi:twitter' },
-  { id: 'facebook', label: 'Facebook',icon: 'mdi:facebook' },
 ]
 
 async function signIn(provider) {
