@@ -1,0 +1,32 @@
+services:
+  onelink-app:
+    image: onelink-web:latest
+    container_name: onelink-app
+    ports:
+      - "127.0.0.1:8008:3000"
+    env_file: .env
+    mem_limit: 256m
+    restart: unless-stopped
+    depends_on:
+      onelink-postgres:
+        condition: service_healthy
+
+  onelink-postgres:
+    image: postgres:16-alpine
+    container_name: onelink-postgres
+    environment:
+      POSTGRES_DB: onelink
+      POSTGRES_USER: onelink
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    mem_limit: 128m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onelink -d onelink"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
