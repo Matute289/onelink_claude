@@ -1,4 +1,4 @@
-import { getMigrations } from 'better-auth/db'
+import { getMigrations } from 'better-auth/db/migration'
 import { getPool } from '~/server/lib/db'
 import { auth } from '~/server/lib/auth'
 
