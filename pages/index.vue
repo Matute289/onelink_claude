@@ -70,7 +70,7 @@
               <icon name="ph:pencil-simple-duotone" class="h-3.5 w-3.5 shrink-0" />
               <span class="truncate">{{ currentProfileTitle }}</span>
             </div>
-            <
+            <a
               href="https://github.com/Matute289/onelink_claude"
               target="_blank"
               @click="menuOpen = false"
