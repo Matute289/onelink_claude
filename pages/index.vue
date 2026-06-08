@@ -1,121 +1,181 @@
 <template>
-  <div class="h-screen flex flex-col">
-    <!-- Top: editor + preview -->
-    <div class="flex-1 grid grid-cols-3 divide-x overflow-hidden">
-      <div class="col-span-2 h-full flex flex-col bg-slate-100">
-        <div class="flex-1 overflow-y-auto p-8">
-          <app-form-profile
-            v-model:name="data.n"
-            v-model:desc="data.d"
-            v-model:image="data.i"
-          />
-          <app-form-hr />
-          <app-form-social-links
-            v-model:facebook="data.f"
-            v-model:twitter="data.t"
-            v-model:instagram="data.ig"
-            v-model:github="data.gh"
-            v-model:telegram="data.tg"
-            v-model:linkedin="data.l"
-            v-model:email="data.e"
-            v-model:whatsapp="data.w"
-            v-model:youtube="data.y"
-          />
-          <app-form-hr />
-          <app-form-links v-model="data.ls" />
-        </div>
+  <div class="h-screen flex flex-col overflow-hidden">
+    <!-- Action bar -->
+    <div class="shrink-0 bg-white border-b flex items-center h-12">
+      <button
+        @click="prefillDemoData"
+        class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
+      >
+        <icon name="mdi:code-json" class="h-4 w-4" />
+        <span class="hidden sm:inline">Demo</span>
+      </button>
+      <button
+        @click="saveProfile"
+        :disabled="saving"
+        class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+      >
+        <icon name="ph:floppy-disk-duotone" class="h-4 w-4" />
+        <span>{{ saving ? 'Guardando...' : (editingId ? 'Guardar' : 'Guardar nuevo') }}</span>
+      </button>
+      <button
+        v-if="editingId"
+        @click="copyUrl"
+        class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
+      >
+        <icon name="ph:link-duotone" class="h-4 w-4" />
+        <span class="hidden sm:inline">Copiar URL</span>
+      </button>
 
-        <!-- Action bar -->
-        <div class="border-t bg-white flex items-center">
-          <button
-            @click="prefillDemoData"
-            class="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
-          >
-            <span>Demo</span>
-            <icon name="mdi:code-json" class="h-4 w-4" />
-          </button>
-          <button
-            @click="saveProfile"
-            :disabled="saving"
-            class="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-          >
-            <span>{{ saving ? 'Guardando...' : (editingId ? 'Guardar' : 'Guardar nuevo') }}</span>
-            <icon name="ph:floppy-disk-duotone" class="h-4 w-4" />
-          </button>
-          <button
-            v-if="editingId"
-            @click="copyUrl"
-            class="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
-          >
-            <span>Copiar URL</span>
-            <icon name="ph:link-duotone" class="h-4 w-4" />
-          </button>
-          <button
-            @click="signOut"
-            class="h-12 flex items-center space-x-2 px-4 text-xs font-medium text-slate-500 hover:bg-slate-50 ml-auto"
-          >
-            <span>Salir</span>
-            <icon name="ph:sign-out-duotone" class="h-4 w-4" />
-          </button>
-          <a
-            href="https://github.com/Matute289/onelink_claude"
-            target="_blank"
-            class="h-12 flex items-center space-x-2 px-4 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
-          >
-            <icon name="mdi:github" class="h-4 w-4" />
-          </a>
-        </div>
-      </div>
-      <app-form-preview :data="data" />
-    </div>
-
-    <!-- Bottom: Mis perfiles panel -->
-    <div class="h-48 border-t bg-white flex flex-col">
-      <div class="flex items-center justify-between px-6 py-3 border-b">
-        <h2 class="text-sm font-semibold text-slate-700">Mis perfiles</h2>
+      <div class="ml-auto flex items-center h-full">
         <button
-          @click="newProfile"
-          class="flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-slate-900 border rounded-md px-3 py-1.5 hover:bg-slate-50"
+          @click="profilesOpen = true"
+          class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
-          <icon name="ph:plus-bold" class="h-3.5 w-3.5" />
-          <span>Nuevo</span>
+          <icon name="ph:list-duotone" class="h-4 w-4" />
+          <span class="hidden sm:inline">Mis perfiles</span>
+          <span v-if="profiles?.length" class="bg-slate-100 rounded-full px-1.5 py-0.5 leading-none">{{ profiles.length }}</span>
         </button>
-      </div>
 
-      <div class="flex-1 overflow-y-auto">
-        <div v-if="!profiles?.length" class="flex items-center justify-center h-full text-sm text-slate-400">
-          No tenés perfiles todavía. Completá el formulario y guardá.
+        <div class="h-full flex items-center gap-2 px-3 border-l">
+          <img
+            v-if="session?.user?.image"
+            :src="session.user.image"
+            class="h-6 w-6 rounded-full object-cover"
+            :alt="session.user.name"
+          />
+          <icon v-else name="ph:user-circle-duotone" class="h-5 w-5 text-slate-400" />
+          <span class="hidden md:inline text-xs text-slate-500 max-w-24 truncate">{{ session?.user?.name }}</span>
         </div>
-        <table v-else class="w-full text-sm">
-          <tbody>
-            <tr
-              v-for="profile in (profiles ?? [])"
-              :key="profile.id"
-              class="border-b last:border-0 hover:bg-slate-50"
-            >
-              <td class="px-6 py-2 font-medium text-slate-700">{{ profile.title }}</td>
-              <td class="px-2 py-2 text-xs text-slate-400">
-                {{ new Date(profile.created_at).toLocaleDateString('es-AR') }}
-              </td>
-              <td class="px-4 py-2 text-right space-x-2">
-                <button
-                  @click="loadProfile(profile)"
-                  class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
-                >Editar</button>
-                <button
-                  @click="copyProfileUrl(profile.id)"
-                  class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
-                >URL</button>
-                <button
-                  @click="deleteProfile(profile.id)"
-                  class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
-                >Borrar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <button
+          @click="signOut"
+          class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-500 hover:bg-slate-50"
+          title="Cerrar sesión"
+        >
+          <icon name="ph:sign-out-duotone" class="h-4 w-4" />
+          <span class="hidden sm:inline">Salir</span>
+        </button>
+
+        <a
+          href="https://github.com/Matute289/onelink_claude"
+          target="_blank"
+          class="h-full flex items-center px-3 border-l text-slate-700 hover:bg-slate-50"
+          title="Ver en GitHub"
+        >
+          <icon name="mdi:github" class="h-4 w-4" />
+        </a>
       </div>
     </div>
+
+    <!-- Content: form + preview -->
+    <div class="flex-1 flex overflow-hidden">
+      <div class="flex-1 overflow-y-auto bg-slate-100 p-6 md:p-8">
+        <app-form-profile
+          v-model:name="data.n"
+          v-model:desc="data.d"
+          v-model:image="data.i"
+        />
+        <app-form-hr />
+        <app-form-social-links
+          v-model:facebook="data.f"
+          v-model:twitter="data.t"
+          v-model:instagram="data.ig"
+          v-model:github="data.gh"
+          v-model:telegram="data.tg"
+          v-model:linkedin="data.l"
+          v-model:email="data.e"
+          v-model:whatsapp="data.w"
+          v-model:youtube="data.y"
+        />
+        <app-form-hr />
+        <app-form-links v-model="data.ls" />
+      </div>
+
+      <!-- Preview (hidden on mobile/tablet) -->
+      <div class="hidden lg:flex w-80 xl:w-96 shrink-0 border-l overflow-hidden">
+        <app-form-preview :data="data" />
+      </div>
+    </div>
+
+    <!-- Profiles slide-over panel -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="profilesOpen" class="fixed inset-0 z-50 flex justify-end">
+          <div class="absolute inset-0 bg-black/40" @click="profilesOpen = false" />
+          <Transition
+            enter-active-class="transition-transform duration-200"
+            enter-from-class="translate-x-full"
+            enter-to-class="translate-x-0"
+            leave-active-class="transition-transform duration-150"
+            leave-from-class="translate-x-0"
+            leave-to-class="translate-x-full"
+          >
+            <div v-if="profilesOpen" class="relative w-full max-w-sm bg-white h-full shadow-xl flex flex-col">
+              <div class="flex items-center justify-between px-4 py-3 border-b shrink-0">
+                <h2 class="text-sm font-semibold text-slate-700">Mis perfiles</h2>
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="newProfile(); profilesOpen = false"
+                    class="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 border rounded-md px-2.5 py-1.5 hover:bg-slate-50"
+                  >
+                    <icon name="ph:plus-bold" class="h-3 w-3" />
+                    Nuevo
+                  </button>
+                  <button
+                    @click="profilesOpen = false"
+                    class="p-1 rounded hover:bg-slate-100 text-slate-500"
+                  >
+                    <icon name="ph:x-bold" class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex-1 overflow-y-auto">
+                <div v-if="!profiles?.length" class="flex flex-col items-center justify-center h-full gap-3 text-sm text-slate-400 p-8 text-center">
+                  <icon name="ph:link-duotone" class="h-10 w-10 opacity-40" />
+                  <p>No tenés perfiles todavía.<br>Completá el formulario y guardá.</p>
+                </div>
+                <div v-else class="divide-y">
+                  <div
+                    v-for="profile in profiles"
+                    :key="profile.id"
+                    class="px-4 py-3 hover:bg-slate-50"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-700 truncate">{{ profile.title }}</p>
+                        <p class="text-xs text-slate-400">{{ new Date(profile.created_at).toLocaleDateString('es-AR') }}</p>
+                      </div>
+                      <div class="flex items-center gap-1 shrink-0">
+                        <button
+                          @click="loadProfile(profile); profilesOpen = false"
+                          class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
+                        >Editar</button>
+                        <button
+                          @click="copyProfileUrl(profile.id)"
+                          class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100"
+                        >URL</button>
+                        <button
+                          @click="deleteProfile(profile.id)"
+                          class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50"
+                        >Borrar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -129,8 +189,12 @@ const EMPTY_DATA = () => ({
 const data = ref(EMPTY_DATA())
 const editingId = ref(null)
 const saving = ref(false)
+const profilesOpen = ref(false)
 
-const { data: profiles, refresh: refreshProfiles } = await useFetch('/api/profiles')
+const [{ data: profiles, refresh: refreshProfiles }, { data: session }] = await Promise.all([
+  useFetch('/api/profiles'),
+  useFetch('/api/auth/get-session'),
+])
 
 async function saveProfile() {
   if (!data.value.n && !data.value.d) {
