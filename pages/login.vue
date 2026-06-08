@@ -7,22 +7,28 @@
       </div>
 
       <div class="space-y-3">
-        <a
+        <button
           v-for="provider in providers"
           :key="provider.id"
-          :href="`/api/auth/signin/${provider.id}`"
-          class="flex items-center justify-center space-x-3 w-full border border-slate-200 rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          :disabled="loading"
+          class="flex items-center justify-center space-x-3 w-full border border-slate-200 rounded-lg px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+          @click="signIn(provider.id)"
         >
           <icon :name="provider.icon" class="h-5 w-5" />
           <span>Continuar con {{ provider.label }}</span>
-        </a>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { createAuthClient } from 'better-auth/client'
+
 definePageMeta({ layout: false })
+
+const authClient = createAuthClient()
+const loading = ref(false)
 
 const providers = [
   { id: 'google',   label: 'Google',  icon: 'mdi:google' },
@@ -31,4 +37,9 @@ const providers = [
   { id: 'twitter',  label: 'X',       icon: 'mdi:twitter' },
   { id: 'facebook', label: 'Facebook',icon: 'mdi:facebook' },
 ]
+
+async function signIn(provider) {
+  loading.value = true
+  await authClient.signIn.social({ provider, callbackURL: '/' })
+}
 </script>

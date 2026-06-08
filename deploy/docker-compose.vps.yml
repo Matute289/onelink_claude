@@ -8,7 +8,8 @@ services:
     mem_limit: 256m
     restart: unless-stopped
     depends_on:
-      - onelink-postgres
+      onelink-postgres:
+        condition: service_healthy
 
   onelink-postgres:
     image: postgres:16-alpine
@@ -21,6 +22,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     mem_limit: 128m
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onelink -d onelink"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

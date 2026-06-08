@@ -1,10 +1,10 @@
+import { getMigrations } from 'better-auth/db'
 import { getPool } from '~/server/lib/db'
 import { auth } from '~/server/lib/auth'
 
 export default defineNitroPlugin(async () => {
   const pool = getPool()
 
-  // Create profiles table
   await pool.query(`
     CREATE TABLE IF NOT EXISTS profiles (
       id          TEXT PRIMARY KEY,
@@ -20,8 +20,8 @@ export default defineNitroPlugin(async () => {
     CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON profiles (user_id)
   `)
 
-  // Run better-auth migrations (creates users, accounts, sessions tables)
-  await auth.migrate()
+  const { runMigrations } = await getMigrations(auth.options)
+  await runMigrations()
 
   console.log('[onelink] DB migrations complete')
 })
