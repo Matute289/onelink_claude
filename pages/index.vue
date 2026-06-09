@@ -27,10 +27,10 @@
       </button>
 
       <!-- User menu -->
-      <!-- Mis perfiles button (outside menu) -->
+      <!-- Mis perfiles button (outside menu, pushed to right) -->
       <button
         @click="profilesOpen = true"
-        class="h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
+        class="ml-auto h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
       >
         <icon name="ph:list-duotone" class="h-4 w-4" />
         <span class="hidden sm:inline">Mis perfiles</span>
@@ -94,8 +94,8 @@
     </div>
 
     <!-- Content: form + preview -->
-    <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
-      <div class="lg:col-span-2 min-w-0 overflow-y-auto bg-slate-100 p-6 md:p-8">
+    <div class="flex-1 flex min-h-0 overflow-hidden">
+      <div class="flex-1 min-w-0 overflow-y-auto bg-slate-100 p-6 md:p-8">
         <app-form-profile
           v-model:name="data.n"
           v-model:desc="data.d"
@@ -117,7 +117,7 @@
         <app-form-links v-model="data.ls" />
       </div>
 
-      <div class="hidden lg:flex border-l overflow-hidden">
+      <div class="hidden lg:block w-80 xl:w-96 shrink-0 border-l overflow-hidden">
         <app-form-preview :data="data" />
       </div>
     </div>
