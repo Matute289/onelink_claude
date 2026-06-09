@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-slate-900 lg:flex">
+  <div class="min-h-screen bg-slate-900 flex flex-col lg:flex-row">
 
-    <!-- Left: animated live demo -->
-    <div class="hidden lg:flex flex-1 flex-col items-center justify-center p-12 gap-8">
+    <!-- Top/Left: animated live demo -->
+    <div class="flex flex-col items-center justify-center px-6 pt-10 pb-4 gap-4 lg:flex-1 lg:p-12 lg:gap-8">
       <div
         class="transition-opacity duration-500"
         :class="isResetting ? 'opacity-0' : 'opacity-100'"
       >
         <!-- Phone frame -->
-        <div class="w-[340px] rounded-[3rem] ring-8 ring-slate-600 bg-gradient-to-b from-amber-50 via-rose-50 to-fuchsia-100 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+        <div class="w-[280px] lg:w-[340px] rounded-[3rem] ring-8 ring-slate-600 bg-gradient-to-b from-amber-50 via-rose-50 to-fuchsia-100 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.6)]">
           <div class="px-6 pt-12 pb-8 space-y-5">
             <!-- Avatar -->
             <Transition
@@ -82,8 +82,8 @@
       </p>
     </div>
 
-    <!-- Right: login card -->
-    <div class="flex-1 flex items-center justify-center p-8 min-h-screen">
+    <!-- Bottom/Right: login card -->
+    <div class="flex items-center justify-center p-6 pb-10 lg:flex-1 lg:p-8 lg:min-h-screen">
       <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm space-y-6">
         <div class="text-center">
           <h1 class="text-2xl font-bold text-slate-800">Onelink</h1>
