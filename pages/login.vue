@@ -3,7 +3,7 @@
     <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm space-y-6">
       <div class="text-center">
         <h1 class="text-2xl font-bold text-slate-800">Onelink</h1>
-        <p class="text-sm text-slate-500 mt-1">Iniciá sesión para continuar</p>
+        <p class="text-sm text-slate-500 mt-1">Sign in to continue</p>
       </div>
 
       <div class="space-y-3">
@@ -15,7 +15,7 @@
           @click="signIn(provider.id)"
         >
           <icon :name="provider.icon" class="h-5 w-5" />
-          <span>Continuar con {{ provider.label }}</span>
+          <span>Continue with {{ provider.label }}</span>
         </button>
       </div>
     </div>

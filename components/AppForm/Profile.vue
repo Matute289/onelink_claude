@@ -43,11 +43,11 @@
           <div class="mt-2 flex items-center gap-3">
             <label class="cursor-pointer flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 border rounded-md px-2.5 py-1.5 hover:bg-slate-50 transition-colors">
               <icon name="ph:upload-simple-duotone" class="h-3.5 w-3.5" />
-              Subir foto
+              Upload photo
               <input type="file" accept="image/*" class="hidden" @change="handleFileUpload" />
             </label>
             <span v-if="uploadError" class="text-xs text-red-500">{{ uploadError }}</span>
-            <span v-else class="text-xs text-slate-400">o pegá una URL arriba</span>
+            <span v-else class="text-xs text-slate-400">or paste a URL above</span>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ function handleFileUpload(event) {
   const file = event.target.files[0]
   if (!file) return
   if (file.size > MAX_SIZE) {
-    uploadError.value = 'La imagen no puede superar 2MB'
+    uploadError.value = 'Image must be under 2MB'
     event.target.value = ''
     return
   }

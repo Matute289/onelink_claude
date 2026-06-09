@@ -15,7 +15,15 @@
         class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
       >
         <icon name="ph:floppy-disk-duotone" class="h-4 w-4" />
-        <span>{{ saving ? 'Guardando...' : 'Guardar Onelink' }}</span>
+        <span>{{ saving ? 'Saving...' : 'Save Onelink' }}</span>
+      </button>
+      <button
+        @click="profilesOpen = true"
+        class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
+      >
+        <icon name="ph:list-duotone" class="h-4 w-4" />
+        <span class="hidden sm:inline">My profiles</span>
+        <span v-if="profiles?.length" class="bg-slate-100 rounded-full px-1.5 py-0.5 leading-none">{{ profiles.length }}</span>
       </button>
       <button
         v-if="editingId"
@@ -23,22 +31,11 @@
         class="h-full flex items-center gap-1.5 px-3 border-r text-xs font-medium text-slate-700 hover:bg-slate-50"
       >
         <icon name="ph:link-duotone" class="h-4 w-4" />
-        <span class="hidden sm:inline">Copiar URL</span>
+        <span class="hidden sm:inline">Copy URL</span>
       </button>
 
       <!-- User menu -->
-      <!-- Mis perfiles button (outside menu, pushed to right) -->
-      <button
-        @click="profilesOpen = true"
-        class="ml-auto h-full flex items-center gap-1.5 px-3 border-l text-xs font-medium text-slate-700 hover:bg-slate-50"
-      >
-        <icon name="ph:list-duotone" class="h-4 w-4" />
-        <span class="hidden sm:inline">Mis perfiles</span>
-        <span v-if="profiles?.length" class="bg-slate-100 rounded-full px-1.5 py-0.5 leading-none">{{ profiles.length }}</span>
-      </button>
-
-      <!-- User menu -->
-      <div class="h-full flex items-center border-l relative" ref="menuRef">
+      <div class="ml-auto h-full flex items-center border-l relative" ref="menuRef">
         <button
           @click="menuOpen = !menuOpen"
           class="h-full flex items-center gap-2 px-3 hover:bg-slate-50"
@@ -78,7 +75,7 @@
               class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
             >
               <icon name="mdi:github" class="h-4 w-4 text-slate-400" />
-              Ver proyecto
+              View project
             </a>
             <div class="border-t my-1" />
             <button
@@ -86,7 +83,7 @@
               class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2.5"
             >
               <icon name="ph:sign-out-duotone" class="h-4 w-4" />
-              Cerrar sesión
+              Sign out
             </button>
           </div>
         </Transition>
@@ -144,14 +141,14 @@
           >
             <div v-if="profilesOpen" class="relative w-full max-w-sm bg-white h-full shadow-xl flex flex-col">
               <div class="flex items-center justify-between px-4 py-3 border-b shrink-0">
-                <h2 class="text-sm font-semibold text-slate-700">Mis perfiles</h2>
+                <h2 class="text-sm font-semibold text-slate-700">My profiles</h2>
                 <div class="flex items-center gap-2">
                   <button
                     @click="newProfile(); profilesOpen = false"
                     class="flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 border rounded-md px-2.5 py-1.5 hover:bg-slate-50"
                   >
                     <icon name="ph:plus-bold" class="h-3 w-3" />
-                    Nuevo
+                    New
                   </button>
                   <button @click="profilesOpen = false" class="p-1 rounded hover:bg-slate-100 text-slate-500">
                     <icon name="ph:x-bold" class="h-4 w-4" />
@@ -162,7 +159,7 @@
               <div class="flex-1 overflow-y-auto">
                 <div v-if="!profiles?.length" class="flex flex-col items-center justify-center h-full gap-3 text-sm text-slate-400 p-8 text-center">
                   <icon name="ph:link-duotone" class="h-10 w-10 opacity-40" />
-                  <p>No tenés perfiles todavía.<br>Completá el formulario y guardá.</p>
+                  <p>No profiles yet.<br>Fill in the form and save.</p>
                 </div>
                 <div v-else class="divide-y">
                   <div
@@ -173,12 +170,12 @@
                     <div class="flex items-center justify-between gap-2">
                       <div class="min-w-0">
                         <p class="text-sm font-medium text-slate-700 truncate">{{ profile.title }}</p>
-                        <p class="text-xs text-slate-400">{{ new Date(profile.created_at).toLocaleDateString('es-AR') }}</p>
+                        <p class="text-xs text-slate-400">{{ new Date(profile.created_at).toLocaleDateString('en-US') }}</p>
                       </div>
                       <div class="flex items-center gap-1 shrink-0">
-                        <button @click="loadProfile(profile); profilesOpen = false" class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100">Editar</button>
+                        <button @click="loadProfile(profile); profilesOpen = false" class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100">Edit</button>
                         <button @click="copyProfileUrl(profile.id)" class="text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100">URL</button>
-                        <button @click="deleteProfile(profile.id)" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50">Borrar</button>
+                        <button @click="deleteProfile(profile.id)" class="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50">Delete</button>
                       </div>
                     </div>
                   </div>
@@ -224,10 +221,10 @@ const currentProfileTitle = computed(() =>
 
 async function saveProfile() {
   if (!data.value.n && !data.value.d) {
-    alert('Completá al menos el nombre o la descripción.')
+    alert('Please fill in at least a name or description.')
     return
   }
-  const title = prompt('Título para este perfil (ej: Laboral, Hobbies):', editingId.value
+  const title = prompt('Profile title (e.g. Work, Hobbies):', editingId.value
     ? profiles.value?.find(p => p.id === editingId.value)?.title ?? ''
     : '')
   if (!title) return
@@ -259,7 +256,7 @@ function copyUrl() {
 
 function copyProfileUrl(id) {
   const url = `${window.location.origin}/p/${id}`
-  navigator.clipboard.writeText(url).then(() => alert('URL copiada al clipboard'))
+  navigator.clipboard.writeText(url).then(() => alert('URL copied to clipboard'))
 }
 
 async function loadProfile(profile) {
@@ -269,7 +266,7 @@ async function loadProfile(profile) {
 }
 
 async function deleteProfile(id) {
-  if (!confirm('¿Seguro que querés borrar este perfil?')) return
+  if (!confirm('Delete this profile?')) return
   await $fetch(`/api/profiles/${id}`, { method: 'DELETE' })
   if (editingId.value === id) newProfile()
   await refreshProfiles()
