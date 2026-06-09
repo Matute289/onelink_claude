@@ -46,11 +46,12 @@
           <img
             v-if="session?.user?.image"
             :src="session.user.image"
-            class="h-6 w-6 rounded-full object-cover"
+            class="h-6 w-6 rounded-full object-cover shrink-0"
             :alt="session?.user?.name"
           />
-          <icon v-else name="ph:user-circle-duotone" class="h-5 w-5 text-slate-400" />
-          <icon name="ph:caret-down-bold" class="h-3 w-3 text-slate-400" />
+          <icon v-else name="ph:user-circle-duotone" class="h-5 w-5 text-slate-400 shrink-0" />
+          <span class="text-xs font-medium text-slate-700 max-w-32 truncate">{{ session?.user?.name }}</span>
+          <icon name="ph:caret-down-bold" class="h-3 w-3 text-slate-400 shrink-0" />
         </button>
 
         <Transition
@@ -94,7 +95,7 @@
 
     <!-- Content: form + preview -->
     <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
-      <div class="lg:col-span-2 overflow-y-auto bg-slate-100 p-6 md:p-8">
+      <div class="lg:col-span-2 min-w-0 overflow-y-auto bg-slate-100 p-6 md:p-8">
         <app-form-profile
           v-model:name="data.n"
           v-model:desc="data.d"
