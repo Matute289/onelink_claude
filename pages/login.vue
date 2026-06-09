@@ -8,7 +8,7 @@
         :class="isResetting ? 'opacity-0' : 'opacity-100'"
       >
         <!-- Phone frame -->
-        <div class="w-[272px] rounded-[3rem] ring-8 ring-slate-600 bg-gradient-to-b from-amber-50 via-rose-50 to-fuchsia-100 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+        <div class="w-[340px] rounded-[3rem] ring-8 ring-slate-600 bg-gradient-to-b from-amber-50 via-rose-50 to-fuchsia-100 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.6)]">
           <div class="px-6 pt-12 pb-8 space-y-5">
             <!-- Avatar -->
             <Transition
